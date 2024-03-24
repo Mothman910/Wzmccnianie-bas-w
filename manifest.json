@@ -3,7 +3,6 @@
   "name": "Wzmacnianie basów",
   "version": "1.0",
   "description": "Extension to count header elements on inactive tabs and display them on active tab.",
-
   "permissions": ["tabs", "activeTab", "scripting", "storage"],
 
   "content_scripts": [

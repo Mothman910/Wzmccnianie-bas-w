@@ -26,10 +26,19 @@ function adjustVolumeBasedOnFrequency() {
 
   // Obliczenie średniej mocy dźwięku
   let totalSumHz = 0;
-  const bassBoost = 3; // Współczynnik wzmocnienia basów
+  // Współczynnik wzmocnienia basów
+  const bassBoost = {
+    // Wprowadzić wartość z przedziału 1-100
+    bassPower: 10,
+    reversePower: function () {
+      return 101 - this.bassPower;
+    },
+  };
+
   for (let i = 0; i < dataArray.length; i++) {
-    const indexModifier = i == 0 ? 1 : Math.round(i ** (1 / bassBoost));
-    console.log("modyfi", indexModifier);
+    const indexModifier =
+      i == 0 ? 1 : Math.round(i ** (1 / bassBoost.reversePower()));
+    // console.log("modyfi", indexModifier);
     totalSumHz += dataArray[i] / indexModifier;
   }
   const AverageHz = totalSumHz / dataArray.length;
@@ -40,8 +49,11 @@ function adjustVolumeBasedOnFrequency() {
 
   // Dostosowywanie głośności
   if (!isNaN(AverageHz) && AverageHz >= 0 && AverageHz <= 255) {
-    videoElement.volume = Math.max(minVolume, AverageHz / 255);
-    console.log("above", videoElement.volume);
+    videoElement.volume =
+      Math.max(minVolume, AverageHz / 255) * 1.5 <= 1
+        ? Math.max(minVolume, AverageHz / 255) * 1.5
+        : 1;
+    console.log("volume", videoElement.volume);
   } else {
     console.error("Nieprawidłowa wartość AverageHz:", AverageHz);
   }
