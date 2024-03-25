@@ -20,8 +20,13 @@ analyser.connect(audioContext.destination);
 // Funkcja regulująca basy i zmniejszająca głośność pozostałych częstotliwości
 // Funkcja regulująca basy i wyciszająca dźwięki powyżej 100Hz
 // Funkcja regulująca głośność wideo na podstawie pasm częstotliwości
+let enableExtension = true;
 function adjustVolumeBasedOnFrequency() {
   // Pobranie danych częstotliwości
+  if (!enableExtension) {
+    videoElement.volume = 1;
+    return;
+  }
   analyser.getByteFrequencyData(dataArray);
 
   // Obliczenie średniej mocy dźwięku
@@ -53,7 +58,7 @@ function adjustVolumeBasedOnFrequency() {
       Math.max(minVolume, AverageHz / 255) * 1.5 <= 1
         ? Math.max(minVolume, AverageHz / 255) * 1.5
         : 1;
-    console.log("volume", videoElement.volume);
+    // console.log("volume", videoElement.volume);
   } else {
     console.error("Nieprawidłowa wartość AverageHz:", AverageHz);
   }
@@ -64,3 +69,12 @@ function adjustVolumeBasedOnFrequency() {
 }
 // Rozpoczęcie regulacji głośności na podstawie pasm częstotliwości
 adjustVolumeBasedOnFrequency();
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+  if (message.command === "enableExtension") {
+    console.log("Wtyczka włączona");
+    enableExtension = true;
+    videoElement.volume = 0.1;
+    console.log(videoElement.volume);
+    adjustVolumeBasedOnFrequency();
+  }
+});
